@@ -1,66 +1,85 @@
 #include <iostream>
-#include <cstdio>  
-#include <cstring>  
-#include <cstdlib>  
+#include <cstdio>
+#include <cstring>
 
 using namespace std;
 
 // --- Struktur Data untuk Tugas ---
-struct Task {
+struct Task
+{
     char description[256];
     int priority;
-    Task* next;
-    Task* prev;
+    Task *next;
+    Task *prev;
 };
 
+void bersihkanList();
+
 // --- Pointer Global ---
-Task* head = nullptr;
-Task* tail = nullptr;
-const char* FILENAME = "todolist_no_constructor.dat"; // Nama file baru untuk versi ini
+Task *head = nullptr;
+Task *tail = nullptr;
+const char *FILENAME = "to_d_olist.dat"; // Nama file 
 
 // --- Implementasi Fungsi ---
 
-Task* buatNode(const char* desc_param, int prio_param) {
-    Task* newNode = new Task; 
-    if (desc_param != nullptr) { 
+Task *buatNode(const char *desc_param, int prio_param)
+{
+    Task *newNode = new Task;
+    if (desc_param != nullptr)
+    {
         strncpy(newNode->description, desc_param, sizeof(newNode->description) - 1);
-        newNode->description[sizeof(newNode->description) - 1] = '\0'; 
-    } else {
-        newNode->description[0] = '\0'; 
+        newNode->description[sizeof(newNode->description) - 1] = '\0';
+    }
+    else
+    {
+        newNode->description[0] = '\0';
     }
     newNode->priority = prio_param;
-    newNode->next = nullptr; 
-    newNode->prev = nullptr; 
+    newNode->next = nullptr;
+    newNode->prev = nullptr;
 
     return newNode;
 }
 
-void sisipNodeSesuaiPrioritas(const char* desc, int prio) {
-    Task* newNode = buatNode(desc, prio); 
+void sisipNodeSesuaiPrioritas(const char *desc, int prio)
+{
+    Task *newNode = buatNode(desc, prio);
 
-    if (head == nullptr) { 
+    if (head == nullptr)
+    {
         head = tail = newNode;
-    } else if (prio < head->priority) {
+    }
+    else if (prio < head->priority)
+    {
         newNode->next = head;
         head->prev = newNode;
         head = newNode;
-    } else{
-        Task* current = head;
-        while (current != nullptr && prio >= current->priority) {
+    }
+    else
+    {
+        Task *current = head;
+        while (current != nullptr && prio >= current->priority)
+        {
             current = current->next;
         }
 
-        if (current == nullptr) { 
+        if (current == nullptr)
+        {
             tail->next = newNode;
             newNode->prev = tail;
             tail = newNode;
-        } else { 
+        }
+        else
+        {
             newNode->next = current;
             newNode->prev = current->prev;
 
-            if (current->prev != nullptr) { 
+            if (current->prev != nullptr)
+            {
                 current->prev->next = newNode;
-            } else{
+            }
+            else
+            {
                 head = newNode;
             }
             current->prev = newNode;
