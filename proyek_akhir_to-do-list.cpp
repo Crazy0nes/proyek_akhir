@@ -86,3 +86,101 @@ void sisipNodeSesuaiPrioritas(const char *desc, int prio)
         }
     }
 }
+
+void tampilkanTugas()
+{
+    if (head == nullptr)
+    {
+        cout << "Tidak ada tugas dalam daftar.\n";
+        return;
+    }
+    cout << "\n--- Daftar Tugas (Terurut Berdasarkan Prioritas) ---\n";
+    Task *current = head;
+    int count = 1;
+    while (current != nullptr)
+    {
+        cout << count << ". Deskripsi: " << current->description
+             << " (Prioritas: " << current->priority << ")\n";
+        current = current->next;
+        count++;
+    }
+    cout << "--------------------------------------------------\n";
+}
+
+void cariTugas()
+{
+    if (head == nullptr)
+    {
+        cout << "Daftar tugas kosong. Tidak ada yang bisa dicari.\n";
+        return;
+    }
+    char keyword[100];
+    cout << "Masukkan kata kunci pencarian: ";
+    cin.ignore(1024, '\n');
+    cin.getline(keyword, sizeof(keyword));
+
+    Task *current = head;
+    bool found = false;
+    cout << "\n--- Hasil Pencarian untuk \"" << keyword << "\" ---\n";
+    int count = 1;
+    while (current != nullptr)
+    {
+        if (strstr(current->description, keyword) != nullptr)
+        {
+            cout << count << ". Deskripsi: " << current->description
+                 << " (Prioritas: " << current->priority << ")\n";
+            found = true;
+            count++;
+        }
+        current = current->next;
+    }
+    if (!found)
+    {
+        cout << "Tidak ada tugas yang cocok dengan kata kunci \"" << keyword << "\".\n";
+    }
+    cout << "----------------------------------------------\n";
+}
+
+void hapusTugasBerdasarkanDeskripsi(const char *descKey)
+{
+    if (head == nullptr)
+    {
+        cout << "List Kosong, tidak ada yang bisa dihapus.\n";
+        return;
+    }
+    Task *current = head;
+    while (current != nullptr && strcmp(current->description, descKey) != 0)
+    {
+        current = current->next;
+    }
+
+    if (current == nullptr)
+    {
+        cout << "Tugas dengan deskripsi \"" << descKey << "\" tidak ditemukan.\n";
+        return;
+    }
+
+    if (current == head)
+    {
+        head = current->next;
+    }
+    if (current->prev != nullptr)
+    {
+        current->prev->next = current->next;
+    }
+    if (current->next != nullptr)
+    {
+        current->next->prev = current->prev;
+    }
+    if (current == tail)
+    {
+        tail = current->prev;
+    }
+    if (head == nullptr)
+    {
+        tail = nullptr;
+    }
+
+    delete current;
+    cout << "Tugas \"" << descKey << "\" berhasil dihapus.\n";
+}
