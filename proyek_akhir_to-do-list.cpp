@@ -18,7 +18,7 @@ void bersihkanList();
 // --- Pointer Global ---
 Task *head = nullptr;
 Task *tail = nullptr;
-const char *FILENAME = "to_d_olist.dat"; // Nama file 
+const char *FILENAME = "to_do_list.dat"; // Nama file 
 
 // --- Implementasi Fungsi ---
 
@@ -274,4 +274,98 @@ void bersihkanList()
         current = nextNode;
     }
     head = tail = nullptr;
+}
+
+// --- Fungsi main (Menu) ---
+int main()
+{
+    muatDariFile();
+
+    int choice;
+    char descInput[256];
+    int prioInput;
+
+    do
+    {
+        cout << "\n=====  Aplikasi To-Do List  =====\n";
+        cout << "1. Tambah Tugas Baru (Sesuai Prioritas)" << endl;
+        cout << "2. Lihat Semua Tugas" << endl;
+        cout << "3. Cari Tugas" << endl;
+        cout << "4. Hapus Tugas (Berdasarkan Deskripsi Persis)" << endl;
+        cout << "0. Keluar" << endl;
+        cout << "Pilihan Anda: ";
+
+        while (!(cin >> choice))
+        {
+            cout << "Input tidak valid. Masukkan angka: ";
+            cin.clear();
+            cin.ignore(1024, '\n');
+        }
+
+        switch (choice)
+        {
+        case 1:
+            cout << "Masukkan deskripsi tugas: ";
+            cin.ignore(1024, '\n');
+            cin.getline(descInput, sizeof(descInput));
+            cout << "Masukkan prioritas: ";
+            while (!(cin >> prioInput))
+            {
+                cout << "Input prioritas tidak valid. Masukkan angka: ";
+                cin.clear();
+                cin.ignore(1024, '\n');
+            }
+            sisipNodeSesuaiPrioritas(descInput, prioInput);
+            cout << "Tugas ditambahkan.\n\n";
+            system("pause");
+            system("cls");
+            break;
+
+        case 2:
+            tampilkanTugas();
+            cout << endl;
+            system("pause");
+            system("cls");
+            break;
+
+        case 3:
+            cariTugas();
+            cout << endl;
+            system("pause");
+            system("cls");
+            break;
+
+        case 4:
+            if (head == nullptr)
+            {
+                cout << "Daftar tugas kosong.\n";
+            }
+            else
+            {
+                cout << "Masukkan deskripsi tugas yang ingin dihapus (persis): ";
+                cin.ignore(1024, '\n');
+                cin.getline(descInput, sizeof(descInput));
+                hapusTugasBerdasarkanDeskripsi(descInput);
+            }
+            cout << endl;
+            system("pause");
+            system("cls");
+            break;
+
+        case 0:
+            cout << "Menyimpan tugas sebelum keluar...\n";
+            simpanKeFile();
+            cout << "Terima kasih!\n";
+            break;
+
+        default:
+            cout << "Pilihan tidak valid. Silakan coba lagi.\n";
+            cout << endl;
+            system("pause");
+            system("cls");
+        }
+    } while (choice != 0);
+
+    bersihkanList();
+    return 0;
 }
