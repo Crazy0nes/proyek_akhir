@@ -184,3 +184,94 @@ void hapusTugasBerdasarkanDeskripsi(const char *descKey)
     delete current;
     cout << "Tugas \"" << descKey << "\" berhasil dihapus.\n";
 }
+
+
+void simpanKeFile()
+{
+    FILE *file = fopen(FILENAME, "wb");
+    if (file == nullptr)
+    {
+        cerr << "Error: Tidak dapat membuka file " << FILENAME << " untuk ditulis.\n";
+        return;
+    }
+
+    int taskCount = 0;
+    Task *tempCount = head;
+    while (tempCount != nullptr)
+    {
+        taskCount++;
+        tempCount = tempCount->next;
+    }
+    fwrite(&taskCount, sizeof(int), 1, file);
+
+    Task *current = head;
+    while (current != nullptr)
+    {
+        int descLength = strlen(current->description);
+        fwrite(&descLength, sizeof(int), 1, file);
+        fwrite(current->description, sizeof(char), descLength, file);
+        fwrite(&current->priority, sizeof(int), 1, file);
+        current = current->next;
+    }
+    fclose(file);
+}
+
+void muatDariFile()
+{
+    FILE *file = fopen(FILENAME, "rb");
+    if (file == nullptr)
+    {
+        return;
+    }
+    bersihkanList();
+
+    int taskCount = 0;
+    if (fread(&taskCount, sizeof(int), 1, file) != 1)
+    {
+        fclose(file);
+        return;
+    }
+
+    for (int i = 0; i < taskCount; ++i)
+    {
+        int descLength;
+        char descBuffer[256];
+        int priority;
+
+        if (fread(&descLength, sizeof(int), 1, file) != 1)
+            break;
+
+        if (descLength >= 0 && descLength < (int)sizeof(descBuffer))
+        {
+            if (fread(descBuffer, sizeof(char), descLength, file) != (size_t)descLength)
+                break;
+            descBuffer[descLength] = '\0';
+        }
+        else
+        {
+            cerr << "Peringatan: Panjang deskripsi tidak valid atau terlalu besar di file untuk task ke-" << i + 1 << ". Task dilewati." << endl;
+            if (fread(&priority, sizeof(int), 1, file) != 1)
+                break;
+            continue;
+        }
+
+        if (fread(&priority, sizeof(int), 1, file) != 1)
+            break;
+
+        sisipNodeSesuaiPrioritas(descBuffer, priority);
+    }
+    fclose(file);
+}
+
+void bersihkanList()
+{
+    Task *current = head;
+    Task *nextNode = nullptr;
+    while (current != nullptr)
+    {
+        nextNode = current->next;
+        delete current;
+        current = nextNode;
+    }
+    head = tail = nullptr;
+}
